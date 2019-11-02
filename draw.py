@@ -47,9 +47,9 @@ def layer_grids(back, *grids):
 
 def surround_with_box(grid, gridsize, box):
     """Surrounds given grid (with assisting gridsize) with box (boxchars)."""
-    top_row = box.top_left + box.runs * config.GRID[0] + box.top_right
+    top_row = box.top_left + box.runs * config.grid[0] + box.top_right
     top_row = list(top_row)
-    bottom_row = box.bottom_left + box.runs * config.GRID[0] + box.bottom_right
+    bottom_row = box.bottom_left + box.runs * config.grid[0] + box.bottom_right
     bottom_row = list(bottom_row)
     grid.insert(0, top_row)
     for row in range(gridsize[1]):
@@ -59,10 +59,15 @@ def surround_with_box(grid, gridsize, box):
     return grid
 
 
-def append_line_breaks(grid):
-    """Appends line breaks to end of each grid line."""
+def append_line_breaks(grid, keeplast=True):
+    """Appends line breaks to end of each grid line.
+
+    Set keeplast to be False if final line does not require line break.
+    """
     for row in grid:
         row.append("\n")
+    if not keeplast:
+        del grid[-1][-1]
     return grid
 
 
@@ -77,8 +82,8 @@ def show(grid):
 
 
 def additions(grid, *args, **kwargs):
-    grid = surround_with_box(grid, config.GRID, config.BOXCHARS)
-    grid = append_line_breaks(grid)
+    grid = surround_with_box(grid, config.grid, config.BOXCHARS)
+    grid = append_line_breaks(grid, False)
     return grid
 
 
@@ -87,7 +92,7 @@ def create_grid():
 
     Returns a grid.
     """
-    formatted_grid = generate_grid(config.GRID, config.BACKGROUND)
+    formatted_grid = generate_grid(config.grid, config.BACKGROUND)
     modified_grid = additions(formatted_grid)
     return modified_grid
 

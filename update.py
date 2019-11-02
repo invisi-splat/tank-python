@@ -13,10 +13,19 @@ sys.path.insert(0, r".")
 import keyboard
 
 
-def update_gridsize():
-    terminal_size = shutil.get_terminal_size()
-    config.GRID = (terminal_size.columns, terminal_size.lines)
-    print(config.GRID)
+def update_gridsize(snap):
+    """Updates the size of the grid.
+
+    If "snap" is passed as a parameter, then the grid changes size dynamically.
+    """
+    if snap == "snap":
+        terminal_size = shutil.get_terminal_size()
+        # lines = 3 because of the 2 occupied by the box and the 1 occupied by
+        # the cursor
+        config.lines_to_delete = terminal_size.lines
+        config.grid = (terminal_size.columns - 2, terminal_size.lines - 3)
+    else:
+        config.lines_to_delete = config.grid[1]
 
 
 def update():
@@ -25,4 +34,4 @@ def update():
     Define the variables used in update.py for the update() function in
     config.py.
     """
-    update_gridsize()
+    update_gridsize("snap")
