@@ -1,12 +1,10 @@
 """
 Defines the drawing process. Call draw() to call the drawing process.
-Draws the grid (area in which the game is set - the viewing window) and menus,
-scores, etc... everything to be shown, really. Some basic code is here in order
-to assist with the process.
 All variables are defined in config.py and can be updated in there.
 """
 
 import config
+from config import tank1, tank2
 
 
 # generation of grids
@@ -45,16 +43,36 @@ def layer_grids(back, *grids):
     return output
 
 
-def surround_with_box(grid, gridsize, box):
+def draw_tanks(grid):
+    x1 = tank1.x
+    y1 = tank1.y
+    x2 = tank2.x
+    y2 = tank2.y
+    tank1_coords = ((x1, y1), (x1 + 1, y1), (x1 + 1, y1 + 1), (x1, y1 + 1))
+    tank2_coords = ((x2, y2), (x2 + 1, y2), (x2 + 1, y2 + 1), (x2, y2 + 1))
+
+    for pos in range(len(tank1_coords)):
+        colored_part = tank1.color + tank1.iteration[pos] + config.reset
+        grid[tank1_coords[pos][1]][tank1_coords[pos][0]] = colored_part
+    for pos in range(len(tank2_coords)):
+        colored_part = tank2.color + tank2.iteration[pos] + config.reset
+        grid[tank2_coords[pos][1]][tank2_coords[pos][0]] = colored_part
+
+    return grid
+
+
+def surround_with_box(grid, gridsize, boxchars):
     """Surrounds given grid (with assisting gridsize) with box (boxchars)."""
-    top_row = box.top_left + box.runs * config.grid[0] + box.top_right
+    top_row = boxchars.top_left + boxchars.runs * config.grid[0] \
+        + boxchars.top_right
     top_row = list(top_row)
-    bottom_row = box.bottom_left + box.runs * config.grid[0] + box.bottom_right
+    bottom_row = boxchars.bottom_left + boxchars.runs * config.grid[0] \
+        + boxchars.bottom_right
     bottom_row = list(bottom_row)
     grid.insert(0, top_row)
     for row in range(gridsize[1]):
-        grid[row + 1].insert(0, box.rises)
-        grid[row + 1].append(box.rises)
+        grid[row + 1].insert(0, boxchars.rises)
+        grid[row + 1].append(boxchars.rises)
     grid.append(bottom_row)
     return grid
 
@@ -81,7 +99,7 @@ def show(grid):
     return "".join(grid)
 
 
-def additions(grid, *args, **kwargs):
+def additions(grid):
     grid = surround_with_box(grid, config.grid, config.BOXCHARS)
     grid = append_line_breaks(grid, False)
     return grid
@@ -92,9 +110,12 @@ def create_grid():
 
     Returns a grid.
     """
-    formatted_grid = generate_grid(config.grid, config.BACKGROUND)
-    modified_grid = additions(formatted_grid)
-    return modified_grid
+    back_grid = generate_grid(config.grid, config.BACKGROUND)
+    back_grid = additions(back_grid)
+    tank_grid = generate_grid(config.grid, config.BACKGROUND)
+    tank_grid = draw_tanks(tank_grid)
+    final_grid = layer_grids(config.BACKGROUND, back_grid, tank_grid)
+    return final_grid
 
 
 def draw(*args):
@@ -104,14 +125,16 @@ def draw(*args):
     Define the variables used in draw.py for the draw() function in config.py.
     """
     try:
-        if args[0] == "end":
+        if args[0] == "end" and config.grid[0] > 60:
             print(r"""
       ___                              _        _
      / __|__ _ _ __  ___   ___ _ _  __| |___ __| |
     | (_ / _` | '  \/ -_) / -_) ' \/ _` / -_) _` |_
      \___\__,_|_|_|_\___| \___|_||_\__,_\___\__,_(_)
                 """)
-        elif args[0] == "pause":
+        elif args[0] == "end":
+            print("Game ended.")
+        elif args[0] == "pause" and config.grid[0] > 60:
             print(r"""
        ___                                             _
       / __|__ _ _ __  ___   _ __  __ _ _  _ ___ ___ __| |
@@ -119,5 +142,7 @@ def draw(*args):
       \___\__,_|_|_|_\___| | .__/\__,_|\_,_/__/\___\__,_(_)
                            |_|
             """)
+        elif args[0] == "pause":
+            print("Game paused.")
     except IndexError:
         print(show(create_grid()))

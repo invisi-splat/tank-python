@@ -1,8 +1,5 @@
 """
 Defines the updating process. Call update() to call the updating process.
-Updates variables, calculates positions, anything - basically where all the
-game logic is written. It's a blank canvas - any code can be written here! This
-is essentially where the game really is.
 All variables are defined in config.py and can be updated in there.
 """
 

@@ -11,9 +11,11 @@ BACKGROUND = " "  # background to the grid. must be a char
 
 lines_to_delete = grid[1]  # lines to delete in delete.py
 
+colors = {"Red": "\u001b[31;1m", "Blue": "\u001b[34;1m"}
+reset = "\u001b[0m"
 
 # box drawing chars for the grid
-class Box:
+class Boxchars:
     """Box drawing characters for the surrounding box."""
 
     def __init__(self):
@@ -25,7 +27,7 @@ class Box:
         self.runs = "═"
 
 
-BOXCHARS = Box()
+BOXCHARS = Boxchars()
 
 
 class Tank:
@@ -37,15 +39,23 @@ class Tank:
 
     def __init__(self, startx, starty, direction, speed,
                  name, color, controls):  # using "color" for consistency
-        self.x = startx
-        self.startx = startx
+        self.x = startx       # x and y coords are referring to top left corner
+        self.startx = startx  # of tank
         self.y = starty
         self.starty = starty
         self.direction = direction
         self.speed = speed
         self.name = name
-        self.color = color
+        self.color = colors[color]
         self.controls = controls
+        self.top_left = "┌"
+        self.top_right = "┐"
+        self.bottom_left = "└"
+        self.bottom_right = "┘"
+        self.rises = "│"
+        self.runs = "─"
+        self.iteration = [self.top_left, self.top_right, self.bottom_right,
+                          self.bottom_left]
 
     def reposition(self):
         self.x = self.startx
