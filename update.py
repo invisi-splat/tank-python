@@ -28,6 +28,18 @@ def update_gridsize(snap):
         config.lines_to_delete = config.grid[1]
 
 
+def check_keypress(keyboard_event):
+    return keyboard_event.name
+
+
+def pause():
+    config.pause = True
+
+
+def quit():
+    config.quit = True
+
+
 def update():
     """Main update function. Call this to update and calculate. Epic.
 

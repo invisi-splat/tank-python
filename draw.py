@@ -97,10 +97,27 @@ def create_grid():
     return modified_grid
 
 
-def draw():
+def draw(*args):
     """Main draw function. Call this to display the finalised grid or any other
     things to be drawn.
 
     Define the variables used in draw.py for the draw() function in config.py.
     """
-    print(show(create_grid()))
+    try:
+        if args[0] == "end":
+            print(r"""
+      ___                              _        _
+     / __|__ _ _ __  ___   ___ _ _  __| |___ __| |
+    | (_ / _` | '  \/ -_) / -_) ' \/ _` / -_) _` |_
+     \___\__,_|_|_|_\___| \___|_||_\__,_\___\__,_(_)
+                """)
+        elif args[0] == "pause":
+            print(r"""
+       ___                                             _
+      / __|__ _ _ __  ___   _ __  __ _ _  _ ___ ___ __| |
+     | (_ / _` | '  \/ -_) | '_ \/ _` | || (_-</ -_) _` |_
+      \___\__,_|_|_|_\___| | .__/\__,_|\_,_/__/\___\__,_(_)
+                           |_|
+            """)
+    except IndexError:
+        print(show(create_grid()))

@@ -1,10 +1,7 @@
 """
 Defines the deleting process. Call delete() to call the deleting process.
 Deletes what has previously been drawn so that things can be updated and
-redrawn. Not much code here - but it can be edited if you want to some fancy
-deleting (?)
-Note that this requires the subprocess and sys modules in order to work.
-All variables are defined in config.py and can be updated in there.
+redrawn.
 """
 
 import config

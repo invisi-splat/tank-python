@@ -14,6 +14,8 @@ lines_to_delete = grid[1]  # lines to delete in delete.py
 
 # box drawing chars for the grid
 class Box:
+    """Box drawing characters for the surrounding box."""
+
     def __init__(self):
         self.top_left = "╔"
         self.top_right = "╗"
@@ -24,3 +26,34 @@ class Box:
 
 
 BOXCHARS = Box()
+
+
+class Tank:
+    """Tank class. Each tank object is an instantiation of this class.
+
+    Initialise with its starting x and y coords, its direction (a bearing), its
+    speed, its name, its color and its controls (either 0 or 1).
+    """
+
+    def __init__(self, startx, starty, direction, speed,
+                 name, color, controls):  # using "color" for consistency
+        self.x = startx
+        self.startx = startx
+        self.y = starty
+        self.starty = starty
+        self.direction = direction
+        self.speed = speed
+        self.name = name
+        self.color = color
+        self.controls = controls
+
+    def reposition(self):
+        self.x = self.startx
+        self.y = self.starty
+
+
+tank1 = Tank(10, 10, 0, 5, "Tank 1", "Red", 0)
+tank2 = Tank(20, 10, 0, 5, "Tank 2", "Blue", 1)
+
+quit = False  # whether game has been quit or not
+pause = False  # whether game has been paused or not
