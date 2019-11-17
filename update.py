@@ -4,8 +4,11 @@ All variables are defined in config.py and can be updated in there.
 """
 
 import config
+from config import tank1, tank2
 import shutil
 import sys
+from time import time
+import math
 sys.path.insert(0, r".")
 import keyboard
 
@@ -25,8 +28,111 @@ def update_gridsize(snap):
         config.lines_to_delete = config.grid[1]
 
 
-def check_keypress(keyboard_event):
-    return keyboard_event.name
+def keypress_mode0(grid):
+    """Checks keypresses in mode 0 (the game).
+    """
+    tank1_collision = tank1.check_collision(grid)
+    tank2_collision = tank2.check_collision(grid)
+    if not tank1_collision["y"]:
+        if keyboard.is_pressed("w"):
+            tank1.y -= (tank1.speed/2)/config.FPS  # halved to improve
+        if keyboard.is_pressed("s"):               # consistency in movement
+            tank1.y += (tank1.speed/2)/config.FPS
+    else:
+        tank1.y -= tank1_collision["y"]
+    if not tank1_collision["x"]:
+        if keyboard.is_pressed("a"):
+            tank1.x -= tank1.speed/config.FPS
+        if keyboard.is_pressed("d"):
+            tank1.x += tank1.speed/config.FPS
+    else:
+        tank1.x -= tank1_collision["x"]
+
+    if not tank2_collision["y"]:
+        if keyboard.is_pressed("i"):
+            tank2.y -= (tank2.speed/2)/config.FPS
+        if keyboard.is_pressed("k"):
+            tank2.y += (tank2.speed/2)/config.FPS
+    else:
+        tank2.y -= tank2_collision["y"]
+    if not tank2_collision["x"]:
+        if keyboard.is_pressed("j"):
+            tank2.x -= tank2.speed/config.FPS
+        if keyboard.is_pressed("l"):
+            tank2.x += tank2.speed/config.FPS
+    else:
+        tank2.x -= tank2_collision["x"]
+
+    def tank_stuff(tank):
+        tank.direction %= 360
+        tank.startd = time()
+
+    if time() - tank1.startd > config.cooldown1:
+        if keyboard.is_pressed("r"):
+            tank1.direction -= 45
+            tank_stuff(tank1)
+        if keyboard.is_pressed("f"):
+            tank1.direction += 45
+            tank_stuff(tank1)
+
+    if time() - tank2.startd > config.cooldown1:
+        if keyboard.is_pressed("["):
+            tank2.direction -= 45
+            tank_stuff(tank2)
+        if keyboard.is_pressed("'"):
+            tank2.direction += 45
+            tank_stuff(tank2)
+
+    if time() - tank1.starts > config.cooldown2 and len(tank1.bullets) < 4:
+        if keyboard.is_pressed("c"):
+            tank1.shoot_bullet()
+            tank1.starts = time()
+    if time() - tank2.starts > config.cooldown2 and len(tank2.bullets) < 4:
+        if keyboard.is_pressed("/"):
+            tank2.shoot_bullet()
+            tank2.starts = time()
+
+
+def update_bullets(grid, *tanks):
+    """Updates bullets, checks for collision with tanks, and the like.
+    """
+    allbullets = []
+    for tank in tanks:
+        bullets = tank.bullets
+        for bullet in range(len(bullets)):
+            if bullets[bullet].y <= 2 or bullets[bullet].y >= grid[1] - 1:
+                bullets[bullet].direction = 180 - bullets[bullet].direction
+                # hit side walls
+
+            if bullets[bullet].x <= 2 or bullets[bullet].x >= grid[0] - 1:
+                bullets[bullet].direction = 360 - bullets[bullet].direction
+                # hit top/bottom wall
+
+            if bullets[bullet].x >= 1 and bullets[bullet].x <= grid[0]:
+                bullets[bullet].x += bullets[bullet].speed \
+                 * math.sin(math.radians(bullets[bullet].direction))
+            if bullets[bullet].y >= 1 and bullets[bullet].y <= grid[1]:
+                bullets[bullet].y -= bullets[bullet].speed \
+                 * math.cos(math.radians(bullets[bullet].direction))
+                # moves bullets
+
+            if bullets[bullet].life <= 0:
+                del bullets[bullet]
+                break
+                # removes bullets once life is over
+                # their time has come. it is time for them to perish.
+
+            bullets[bullet].life -= 1  # or if they haven't died slowly kill
+                                       # em off
+        try:
+            if tank.hit_bullet():
+                tank.reposition()
+                tank.score += 1
+        except IndexError:
+            pass
+
+        allbullets += bullets
+    config.allbullets = allbullets
 
 
 def pause():
@@ -43,4 +149,6 @@ def update():
     Define the variables used in update.py for the update() function in
     config.py.
     """
+    keypress_mode0(config.grid)
+    update_bullets(config.grid, tank1, tank2)
     update_gridsize("snap")

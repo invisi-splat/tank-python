@@ -5,6 +5,7 @@ All variables are defined in config.py and can be updated in there.
 
 import config
 from config import tank1, tank2
+import math
 
 
 # generation of grids
@@ -44,20 +45,75 @@ def layer_grids(back, *grids):
 
 
 def draw_tanks(grid):
-    x1 = tank1.x
-    y1 = tank1.y
-    x2 = tank2.x
-    y2 = tank2.y
+    """Draws the tanks and their respective directional arrows."""
+    # Apologies for the spaghetti code!!!!
+    x1 = math.floor(tank1.x)
+    y1 = math.floor(tank1.y)
+    x2 = math.floor(tank2.x)
+    y2 = math.floor(tank2.y)
     tank1_coords = ((x1, y1), (x1 + 1, y1), (x1 + 1, y1 + 1), (x1, y1 + 1))
     tank2_coords = ((x2, y2), (x2 + 1, y2), (x2 + 1, y2 + 1), (x2, y2 + 1))
+    tank1_arrows = (
+                    ((x1, y1 - 1), (x1 + 1, y1 - 1)),
+                    ((x1 + 1, y1 - 1), (x1 + 2, y1)),
+                    ((x1 + 2, y1), (x1 + 2, y1 + 1)),
+                    ((x1 + 2, y1 + 1), (x1 + 1, y1 + 2)),
+                    ((x1 + 1, y1 + 2), (x1, y1 + 2)),
+                    ((x1, y1 + 2), (x1 - 1, y1 + 1)),
+                    ((x1 - 1, y1 + 1), (x1 - 1, y1)),
+                    ((x1 - 1, y1), (x1, y1 - 1))
+                    )
+    tank2_arrows = (
+                    ((x2, y2 - 1), (x2 + 1, y2 - 1)),
+                    ((x2 + 1, y2 - 1), (x2 + 2, y2)),
+                    ((x2 + 2, y2), (x2 + 2, y2 + 1)),
+                    ((x2 + 2, y2 + 1), (x2 + 1, y2 + 2)),
+                    ((x2 + 1, y2 + 2), (x2, y2 + 2)),
+                    ((x2, y2 + 2), (x2 - 1, y2 + 1)),
+                    ((x2 - 1, y2 + 1), (x2 - 1, y2)),
+                    ((x2 - 1, y2), (x2, y2 - 1))
+                    )
 
-    for pos in range(len(tank1_coords)):
-        colored_part = tank1.color + tank1.iteration[pos] + config.reset
-        grid[tank1_coords[pos][1]][tank1_coords[pos][0]] = colored_part
-    for pos in range(len(tank2_coords)):
-        colored_part = tank2.color + tank2.iteration[pos] + config.reset
-        grid[tank2_coords[pos][1]][tank2_coords[pos][0]] = colored_part
+    try:
+        for pos in range(len(tank1_coords)):
+            part = tank1.color + tank1.iteration[0][pos] + config.reset
+            grid[tank1_coords[pos][1]][tank1_coords[pos][0]] = part
+    except IndexError:
+        pass
+    try:
+        for pos in range(len(tank2_coords)):
+            part = tank2.color + tank2.iteration[0][pos] + config.reset
+            grid[tank2_coords[pos][1]][tank2_coords[pos][0]] = part
+    except IndexError:
+        pass
 
+    try:
+        pos = int(tank1.direction / 45)
+        part0 = tank1.color + tank1.iteration[1][pos % 4][0] + config.reset
+        part1 = tank1.color + tank1.iteration[1][pos % 4][1] + config.reset
+        grid[tank1_arrows[pos][0][1]][tank1_arrows[pos][0][0]] = part0
+        grid[tank1_arrows[pos][1][1]][tank1_arrows[pos][1][0]] = part1
+    except IndexError:
+        pass
+
+    try:
+        pos = int(tank2.direction / 45)
+        part0 = tank2.color + tank2.iteration[1][pos % 4][0] + config.reset
+        part1 = tank2.color + tank2.iteration[1][pos % 4][1] + config.reset
+        grid[tank2_arrows[pos][0][1]][tank2_arrows[pos][0][0]] = part0
+        grid[tank2_arrows[pos][1][1]][tank2_arrows[pos][1][0]] = part1
+    except IndexError:
+        pass
+
+    return grid
+
+
+def draw_bullets(grid):
+    for tank in config.tanklist:
+        bullets = tank.bullets
+        for bullet in bullets:
+            grid[math.floor(bullet.y)][math.floor(bullet.x)] = tank.color \
+                                                           + "■" + config.reset
     return grid
 
 
@@ -114,7 +170,10 @@ def create_grid():
     back_grid = additions(back_grid)
     tank_grid = generate_grid(config.grid, config.BACKGROUND)
     tank_grid = draw_tanks(tank_grid)
-    final_grid = layer_grids(config.BACKGROUND, back_grid, tank_grid)
+    bullet_grid = generate_grid(config.grid, config.BACKGROUND)
+    bullet_grid = draw_bullets(bullet_grid)
+    final_grid = layer_grids(config.BACKGROUND,
+                             back_grid, tank_grid, bullet_grid)
     return final_grid
 
 

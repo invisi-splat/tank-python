@@ -6,14 +6,12 @@ import update
 import draw
 import delete
 import config
-import time
 import keyboard
 
 
 def prepare():
     keyboard.add_hotkey("space+p", update.pause)
     keyboard.add_hotkey("space+q", update.quit)
-    keyboard.on_press(update.check_keypress)
 
 
 def mainloop():
@@ -21,7 +19,6 @@ def mainloop():
         update.update()
         draw.draw()
         delete.delete()
-        time.sleep(config.TEST_COOLDOWN)
         if config.quit:
             draw.draw("end")
             break
