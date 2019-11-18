@@ -54,16 +54,16 @@ def keypress_mode0(grid):
         tank1.x -= tank1_collision["x"]
 
     if not tank2_collision["y"]:
-        if keyboard.is_pressed("i"):
+        if keyboard.is_pressed("o"):
             tank2.y -= (tank2.speed/2)/config.FPS
-        if keyboard.is_pressed("k"):
+        if keyboard.is_pressed("l"):
             tank2.y += (tank2.speed/2)/config.FPS
     else:
         tank2.y -= tank2_collision["y"]
     if not tank2_collision["x"]:
-        if keyboard.is_pressed("j"):
+        if keyboard.is_pressed("k"):
             tank2.x -= tank2.speed/config.FPS
-        if keyboard.is_pressed("l"):
+        if keyboard.is_pressed(";"):
             tank2.x += tank2.speed/config.FPS
     else:
         tank2.x -= tank2_collision["x"]

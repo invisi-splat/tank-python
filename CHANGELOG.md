@@ -1,6 +1,10 @@
 # CHANGELOG
 All notable changes to this project will be documented in this file.
 
+## [0.1.2] - 2019-11-18
+### Changed
+- Remapped Player 2 controls to `OKL;`
+
 ## [0.1.1] - 2019-11-18
 ### Added
 - `README.md` and `CHANGELOG.md` files
