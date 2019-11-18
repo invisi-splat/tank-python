@@ -6,6 +6,9 @@ import update
 import draw
 import delete
 import config
+import sys
+import getpass
+sys.path.insert(0, r".")
 import keyboard
 
 
@@ -15,12 +18,16 @@ def prepare():
 
 
 def mainloop():
+    update.initupdate()
+    draw.draw()
+    delete.delete()
     while True:
         update.update()
         draw.draw()
         delete.delete()
         if config.quit:
             draw.draw("end")
+            getpass.getpass("")
             break
         elif config.pause:
             draw.draw("pause")

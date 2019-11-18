@@ -7,25 +7,30 @@ import config
 from config import tank1, tank2
 import shutil
 import sys
-from time import time
+import time
 import math
+import random
+import draw
+import delete
 sys.path.insert(0, r".")
 import keyboard
 
 
 def update_gridsize(snap):
-    """Updates the size of the grid.
+    """Updates the size of the grid. Passes this to config.lines_to_delete.
 
     If "snap" is passed as a parameter, then the grid changes size dynamically.
     """
     if snap == "snap":
         terminal_size = shutil.get_terminal_size()
-        # lines = 3 because of the 2 occupied by the box and the 1 occupied by
+        # lines - 3 because of the 2 occupied by the box and the 1 occupied by
         # the cursor
         config.lines_to_delete = terminal_size.lines
         config.grid = (terminal_size.columns - 2, terminal_size.lines - 3)
     else:
         config.lines_to_delete = config.grid[1]
+    tank1.update_start_pos()
+    tank2.update_start_pos()
 
 
 def keypress_mode0(grid):
@@ -65,9 +70,9 @@ def keypress_mode0(grid):
 
     def tank_stuff(tank):
         tank.direction %= 360
-        tank.startd = time()
+        tank.startd = time.time()
 
-    if time() - tank1.startd > config.cooldown1:
+    if time.time() - tank1.startd > config.cooldown1:
         if keyboard.is_pressed("r"):
             tank1.direction -= 45
             tank_stuff(tank1)
@@ -75,7 +80,7 @@ def keypress_mode0(grid):
             tank1.direction += 45
             tank_stuff(tank1)
 
-    if time() - tank2.startd > config.cooldown1:
+    if time.time() - tank2.startd > config.cooldown1:
         if keyboard.is_pressed("["):
             tank2.direction -= 45
             tank_stuff(tank2)
@@ -83,19 +88,18 @@ def keypress_mode0(grid):
             tank2.direction += 45
             tank_stuff(tank2)
 
-    if time() - tank1.starts > config.cooldown2 and len(tank1.bullets) < 4:
+    if time.time() - tank1.starts > config.cooldown2 and len(tank1.bullets) < 4:
         if keyboard.is_pressed("c"):
             tank1.shoot_bullet()
-            tank1.starts = time()
-    if time() - tank2.starts > config.cooldown2 and len(tank2.bullets) < 4:
+            tank1.starts = time.time()
+    if time.time() - tank2.starts > config.cooldown2 and len(tank2.bullets) < 4:
         if keyboard.is_pressed("/"):
             tank2.shoot_bullet()
-            tank2.starts = time()
+            tank2.starts = time.time()
 
 
 def update_bullets(grid, *tanks):
-    """Updates bullets, checks for collision with tanks, and the like.
-    """
+    """Updates bullets, checks for collision with tanks, and the like."""
     allbullets = []
     for tank in tanks:
         bullets = tank.bullets
@@ -124,15 +128,26 @@ def update_bullets(grid, *tanks):
 
             bullets[bullet].life -= 1  # or if they haven't died slowly kill
                                        # em off
-        try:
-            if tank.hit_bullet():
-                tank.reposition()
-                tank.score += 1
-        except IndexError:
-            pass
 
+        hit_bullet = tank.hit_bullet()
+        if hit_bullet:
+            collision_stuff(tank, hit_bullet[1])  # hit_bullet[1] is the bullet
         allbullets += bullets
     config.allbullets = allbullets
+
+
+def collision_stuff(tank, bullet):
+    """Does the stuff once a tank has been hit with a bullet."""
+    for flash in range(8):
+        draw.draw("flash", bullet.origin)
+        time.sleep(random.randint(0, 1) / 20)
+        delete.delete()
+        draw.draw()
+        time.sleep(random.randint(0, 1) / 20)
+        delete.delete()
+    config.reset_bullets()
+    if tank != bullet.origin:
+        bullet.origin.score += 1
 
 
 def pause():
@@ -141,6 +156,12 @@ def pause():
 
 def quit():
     config.quit = True
+
+
+def initupdate():
+    update_gridsize("snap")
+    tank1.reposition()
+    tank2.reposition()
 
 
 def update():

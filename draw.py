@@ -15,6 +15,8 @@ def generate_grid(gridsize, background, *args, **kwargs):
     All grids begin life here!
     """
     formatted_grid = []
+    if args:
+        background = args[0] + background + config.reset
     for x_unit in range(gridsize[1]):
         formatted_grid_row = []
         for y_unit in range(gridsize[0]):
@@ -76,21 +78,21 @@ def draw_tanks(grid):
 
     try:
         for pos in range(len(tank1_coords)):
-            part = tank1.color + tank1.iteration[0][pos] + config.reset
+            part = tank1.color[0] + tank1.iteration[0][pos] + config.reset
             grid[tank1_coords[pos][1]][tank1_coords[pos][0]] = part
     except IndexError:
         pass
     try:
         for pos in range(len(tank2_coords)):
-            part = tank2.color + tank2.iteration[0][pos] + config.reset
+            part = tank2.color[0] + tank2.iteration[0][pos] + config.reset
             grid[tank2_coords[pos][1]][tank2_coords[pos][0]] = part
     except IndexError:
         pass
 
     try:
         pos = int(tank1.direction / 45)
-        part0 = tank1.color + tank1.iteration[1][pos % 4][0] + config.reset
-        part1 = tank1.color + tank1.iteration[1][pos % 4][1] + config.reset
+        part0 = tank1.color[0] + tank1.iteration[1][pos % 4][0] + config.reset
+        part1 = tank1.color[0] + tank1.iteration[1][pos % 4][1] + config.reset
         grid[tank1_arrows[pos][0][1]][tank1_arrows[pos][0][0]] = part0
         grid[tank1_arrows[pos][1][1]][tank1_arrows[pos][1][0]] = part1
     except IndexError:
@@ -98,8 +100,8 @@ def draw_tanks(grid):
 
     try:
         pos = int(tank2.direction / 45)
-        part0 = tank2.color + tank2.iteration[1][pos % 4][0] + config.reset
-        part1 = tank2.color + tank2.iteration[1][pos % 4][1] + config.reset
+        part0 = tank2.color[0] + tank2.iteration[1][pos % 4][0] + config.reset
+        part1 = tank2.color[0] + tank2.iteration[1][pos % 4][1] + config.reset
         grid[tank2_arrows[pos][0][1]][tank2_arrows[pos][0][0]] = part0
         grid[tank2_arrows[pos][1][1]][tank2_arrows[pos][1][0]] = part1
     except IndexError:
@@ -112,7 +114,7 @@ def draw_bullets(grid):
     for tank in config.tanklist:
         bullets = tank.bullets
         for bullet in bullets:
-            grid[math.floor(bullet.y)][math.floor(bullet.x)] = tank.color \
+            grid[math.floor(bullet.y)][math.floor(bullet.x)] = tank.color[0] \
                                                            + "■" + config.reset
     return grid
 
@@ -177,6 +179,7 @@ def create_grid():
     return final_grid
 
 
+# global functions
 def draw(*args):
     """Main draw function. Call this to display the finalised grid or any other
     things to be drawn.
@@ -184,24 +187,40 @@ def draw(*args):
     Define the variables used in draw.py for the draw() function in config.py.
     """
     try:
-        if args[0] == "end" and config.grid[0] > 60:
+        if args[0] == "end" and config.grid[0] > 80:
+            for number in str(tank1.score):
+                config.score += tank1.color[0] + config.numbers[int(number)] \
+                             + config.reset
+            config.score += config.dash
+            for number in str(tank2.score):
+                config.score += tank2.color[0] + config.numbers[int(number)] \
+                             + config.reset
+            print("\u001b[42;1m" + r"""
+      ___                              _        _   
+     / __|__ _ _ __  ___   ___ _ _  __| |___ __| |  
+    | (_ / _` | '  \/ -_) / -_) ' \/ _` / -_) _` |_ 
+     \___\__,_|_|_|_\___| \___|_||_\__,_\___\__,_(_)""" + config.reset)
             print(r"""
-      ___                              _        _
-     / __|__ _ _ __  ___   ___ _ _  __| |___ __| |
-    | (_ / _` | '  \/ -_) / -_) ' \/ _` / -_) _` |_
-     \___\__,_|_|_|_\___| \___|_||_\__,_\___\__,_(_)
-                """)
+  ___                 _
+ / __| __ ___ _ _ ___(_)
+ \__ \/ _/ _ \ '_/ -_)_
+ |___/\__\___/_| \___(_)
+            """ + config.score)
         elif args[0] == "end":
             print("Game ended.")
+            print(f"Score: {tank1.score} - {tank2.score}")
         elif args[0] == "pause" and config.grid[0] > 60:
-            print(r"""
-       ___                                             _
-      / __|__ _ _ __  ___   _ __  __ _ _  _ ___ ___ __| |
-     | (_ / _` | '  \/ -_) | '_ \/ _` | || (_-</ -_) _` |_
+            print("\u001b[43;1m" + r"""
+       ___                                             _   
+      / __|__ _ _ __  ___   _ __  __ _ _  _ ___ ___ __| |  
+     | (_ / _` | '  \/ -_) | '_ \/ _` | || (_-</ -_) _` |_ 
       \___\__,_|_|_|_\___| | .__/\__,_|\_,_/__/\___\__,_(_)
-                           |_|
-            """)
+                           |_|                             """ + config.reset)
         elif args[0] == "pause":
             print("Game paused.")
+        elif args[0] == "flash":
+            grid = generate_grid(config.grid, config.BACKGROUND, args[1].color[1])
+            grid = surround_with_box(grid, config.grid, config.BOXCHARS)
+            print(show(grid))
     except IndexError:
         print(show(create_grid()))

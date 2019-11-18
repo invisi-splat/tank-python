@@ -13,7 +13,7 @@ BACKGROUND = " "  # background to the grid. must be a char
 
 lines_to_delete = grid[1]  # lines to delete in delete.py
 
-colors = {"Red": "\u001b[31;1m", "Blue": "\u001b[34;1m"}
+colors = {"Red": ["\u001b[31;1m", "\u001b[41;1m"], "Blue": ["\u001b[34;1m", "\u001b[44;1m"]}
 reset = "\u001b[0m"
 
 
@@ -50,7 +50,7 @@ class Tank:
         self.speed = speed  # units per second
         self.power = power
         self.name = name
-        self.color = colors[color]  # ansi escape sequence
+        self.color = colors[color]  # ansi escape code. 0 is fore, 1 is back.
         self.controls = controls  # 0 or 1
         self.score = 0
         self.top_left = "┌"
@@ -84,6 +84,13 @@ class Tank:
             collision["y"] = 1
         return collision
 
+    def update_start_pos(self):
+        self.starty = grid[1] / 2
+        if self.name == "Tank 2":
+            self.startx = grid[0] - 10
+        else:
+            self.startx = 10
+
     def hit_bullet(self):
         x = [math.floor(self.x), math.floor(self.x + 1)]
         y = [math.floor(self.y), math.floor(self.y + 1)]
@@ -93,14 +100,14 @@ class Tank:
             if bullet.invins <= 0:
                 if ((x[0] == bulletx or x[1] == bulletx)
                     and (y[0] == bullety or y[1] == bullety)):
-                    return True
+                    return [True, bullet]
             else:
                 bullet.invins -= 1  # invinsibility frames
         return False
 
     def shoot_bullet(self):
         self.bullets.append(Bullet(self.x, self.y, self.direction, self.power,
-                                   self.name))
+                                   self))
 
 
 tank1 = Tank(10, 10, 0, 3, 0.25, "Tank 1", "Red", 0)
@@ -108,6 +115,16 @@ tank2 = Tank(20, 10, 0, 3, 0.25, "Tank 2", "Blue", 1)
 
 tanklist = [tank1, tank2]
 allbullets = []
+
+
+def reset_bullets():
+    global allbullets
+    tank1.bullets = []
+    tank2.bullets = []
+    allbullets = []
+    tank1.reposition()
+    tank2.reposition()
+
 
 """
 For reference:
@@ -120,6 +137,14 @@ Magenta: \u001b[35m
 Cyan: \u001b[36m
 White: \u001b[37m
 Reset: \u001b[0m
+Background Black: \u001b[40m
+Background Red: \u001b[41m
+Background Green: \u001b[42m
+Background Yellow: \u001b[43m
+Background Blue: \u001b[44m
+Background Magenta: \u001b[45m
+Background Cyan: \u001b[46m
+Background White: \u001b[47m
 In order to make it bright, add ;1 in between the [x and the "m".
 """
 
@@ -133,7 +158,7 @@ class Bullet:
         self.direction = direction
         self.speed = speed
         self.origin = origin
-        self.invins = 8  # invinsibility frames - i.e. cannot hurt tanks
+        self.invins = 12  # invinsibility frames - i.e. cannot hurt tanks
         self.life = 360  # length of bullet life in frames
 
 
@@ -145,3 +170,62 @@ gamemode = 0  # gamemode - 0: game, 1: menu, 2: settings
 cooldown1 = 0.2
 # shooting:
 cooldown2 = 0.2
+
+numbers = [r"""
+   __
+  /  \
+ | () |
+  \__/
+""", r"""
+  _
+ / |
+ | |
+ |_|
+""", r"""
+  ___
+ |_  )
+  / /
+ /___|
+""", r"""
+  ____
+ |__ /
+  |_ \
+ |___/
+""", r"""
+  _ _
+ | | |
+ |_  _|
+   |_|
+""", r"""
+  ___
+ | __|
+ |__ \
+ |___/
+""", r"""
+   __
+  / /
+ / _ \
+ \___/
+""", r"""
+  ____
+ |__  |
+   / /
+  /_/
+""", r"""
+  ___
+ ( _ )
+ / _ \
+ \___/
+""", r"""
+  ___
+ / _ \
+ \_, /
+  /_/
+"""]
+
+dash = r"""
+  ___
+ |___|
+"""
+
+score = ""
