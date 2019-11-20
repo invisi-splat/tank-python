@@ -65,8 +65,10 @@ class Tank:
                           [("/", "\\"), ("─", "│"), ("\\", "/"), ("│", "─")]
                           ]
         self.bullets = []
+        self.bombs = []
         self.startd = 0  # directional
         self.starts = 0  # shooting
+        self.startb = 0  # bombs
 
     def reposition(self):
         self.x = self.startx
@@ -105,9 +107,26 @@ class Tank:
                 bullet.invins -= 1  # invinsibility frames
         return False
 
+    def hit_bomb(self):
+        x = [math.floor(self.x), math.floor(self.x + 1)]
+        y = [math.floor(self.y), math.floor(self.y + 1)]
+        for bomb in allbombs:
+            if bomb.explode:
+                for line in bomb.coords:
+                    for coords in line:
+                        bombx = math.floor(coords[0])
+                        bomby = math.floor(coords[1])
+                        if ((x[0] == bombx or x[1] == bombx)
+                            and (y[0] == bomby or y[1] == bomby)):
+                            return [True, bomb]
+        return False
+
     def shoot_bullet(self):
         self.bullets.append(Bullet(self.x, self.y, self.direction, self.power,
                                    self))
+
+    def place_bomb(self):
+        self.bombs.append(Bomb(self.x, self.y, self.power, self))
 
 
 tank1 = Tank(10, 10, 0, 3, 0.25, "Tank 1", "Red", 0)
@@ -115,13 +134,18 @@ tank2 = Tank(20, 10, 0, 3, 0.25, "Tank 2", "Blue", 1)
 
 tanklist = [tank1, tank2]
 allbullets = []
+allbombs = []
 
 
-def reset_bullets():
+def reset_scored():
     global allbullets
+    global allbombs
     tank1.bullets = []
     tank2.bullets = []
+    tank1.bombs = []
+    tank2.bombs = []
     allbullets = []
+    allbombs = []
     tank1.reposition()
     tank2.reposition()
 
@@ -160,6 +184,35 @@ class Bullet:
         self.origin = origin
         self.invins = 12  # invinsibility frames - i.e. cannot hurt tanks
         self.life = 360  # length of bullet life in frames
+
+
+class Bomb:
+    def __init__(self, startx, starty, power, origin):
+        self.x = startx
+        self.startx = startx
+        self.y = starty
+        self.starty = starty
+        self.power = power
+        self.origin = origin
+        self.radius = (
+            (-2, 2), (-4, 4), (-4, 4), (-4, 4), (-2, 2)
+        )  # x coords of each line. ensure that len(radius) % 2 == 1 !
+        self.coords = []
+        self.destruct = 60  # what a badass property
+        self.life = 360  # change this back to normal before pushing!!!
+        self.explode = False
+        self.generate_explosion_coords()
+
+    def generate_explosion_coords(self):
+        self.coords = []
+        x = self.x
+        y = self.y
+        for line in range(len(self.radius)):
+            templist = []
+            currenty = line - math.floor(len(self.radius) / 2)
+            for currentx in range(self.radius[line][0], self.radius[line][1] + 1):
+                templist.append(((x + currentx), (y + currenty)))
+            self.coords.append(templist)
 
 
 quit = False  # whether game has been quit or not

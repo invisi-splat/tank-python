@@ -119,6 +119,24 @@ def draw_bullets(grid):
     return grid
 
 
+def draw_bombs(grid):
+    for tank in config.tanklist:
+        bombs = tank.bombs
+        for bomb in bombs:
+            x = math.floor(bomb.x)
+            y = math.floor(bomb.y)
+            if bomb.explode and bomb.destruct % 2 == 0:  # gives flash
+                radius = bomb.radius
+                for line in range(len(radius)):
+                    currenty = line - math.floor(len(radius) / 2)
+                    for currentx in range(radius[line][0], radius[line][1] + 1):
+                        grid[y + currenty][x + currentx] = tank.color[1] \
+                                                        + " " + config.reset
+            else:
+                grid[y][x] = tank.color[0] + "◯" + config.reset
+    return grid
+
+
 def surround_with_box(grid, gridsize, boxchars):
     """Surrounds given grid (with assisting gridsize) with box (boxchars)."""
     top_row = boxchars.top_left + boxchars.runs * config.grid[0] \
@@ -174,8 +192,10 @@ def create_grid():
     tank_grid = draw_tanks(tank_grid)
     bullet_grid = generate_grid(config.grid, config.BACKGROUND)
     bullet_grid = draw_bullets(bullet_grid)
+    bomb_grid = generate_grid(config.grid, config.BACKGROUND)
+    bomb_grid = draw_bombs(bomb_grid)
     final_grid = layer_grids(config.BACKGROUND,
-                             back_grid, tank_grid, bullet_grid)
+                             back_grid, tank_grid, bullet_grid, bomb_grid)
     return final_grid
 
 

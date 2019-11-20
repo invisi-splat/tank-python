@@ -34,8 +34,7 @@ def update_gridsize(snap):
 
 
 def keypress_mode0(grid):
-    """Checks keypresses in mode 0 (the game).
-    """
+    """Checks keypresses in mode 0 (the game)."""
     tank1_collision = tank1.check_collision(grid)
     tank2_collision = tank2.check_collision(grid)
     if not tank1_collision["y"]:
@@ -97,6 +96,15 @@ def keypress_mode0(grid):
             tank2.shoot_bullet()
             tank2.starts = time.time()
 
+    if time.time() - tank1.startb > config.cooldown2 and len(tank1.bombs) < 2:
+        if keyboard.is_pressed("t"):
+            tank1.place_bomb()
+            tank1.startb = time.time()
+    if time.time() - tank2.startb > config.cooldown2 and len(tank2.bombs) < 2:
+        if keyboard.is_pressed("]"):
+            tank2.place_bomb()
+            tank2.startb = time.time()
+
 
 def update_bullets(grid, *tanks):
     """Updates bullets, checks for collision with tanks, and the like."""
@@ -104,6 +112,8 @@ def update_bullets(grid, *tanks):
     for tank in tanks:
         bullets = tank.bullets
         for bullet in range(len(bullets)):
+            # we use range(len()) so that we can modify the bullets
+            # and not a copy of the bullets
             if bullets[bullet].y <= 2 or bullets[bullet].y >= grid[1] - 1:
                 bullets[bullet].direction = 180 - bullets[bullet].direction
                 # hit side walls
@@ -126,7 +136,7 @@ def update_bullets(grid, *tanks):
                 # removes bullets once life is over
                 # their time has come. it is time for them to perish.
 
-            bullets[bullet].life -= 1  # or if they haven't died slowly kill
+            bullets[bullet].life -= 1  # or if they haven't died, slowly kill
                                        # em off
 
         hit_bullet = tank.hit_bullet()
@@ -136,18 +146,38 @@ def update_bullets(grid, *tanks):
     config.allbullets = allbullets
 
 
-def collision_stuff(tank, bullet):
-    """Does the stuff once a tank has been hit with a bullet."""
+def update_bombs(grid, *tanks):
+    allbombs = []
+    for tank in tanks:
+        bombs = tank.bombs
+        for bomb in range(len(bombs)):
+            if bombs[bomb].destruct <= 0:
+                del bombs[bomb]
+            elif bombs[bomb].explode:
+                bombs[bomb].destruct -= 1
+            elif bombs[bomb].life <= 0:
+                bombs[bomb].explode = True
+            else:
+                bombs[bomb].life -= 1
+        hit_bomb = tank.hit_bomb()
+        if hit_bomb:
+            collision_stuff(tank, hit_bomb[1])
+        allbombs += bombs
+    config.allbombs = allbombs
+
+
+def collision_stuff(tank, object):
+    """Does the stuff once a tank has been hit with an object."""
     for flash in range(8):
-        draw.draw("flash", bullet.origin)
+        draw.draw("flash", object.origin)
         time.sleep(random.randint(0, 1) / 20)
         delete.delete()
         draw.draw()
         time.sleep(random.randint(0, 1) / 20)
         delete.delete()
-    config.reset_bullets()
-    if tank != bullet.origin:
-        bullet.origin.score += 1
+    config.reset_scored()
+    if tank != object.origin:
+        object.origin.score += 1
 
 
 def pause():
@@ -172,4 +202,5 @@ def update():
     """
     keypress_mode0(config.grid)
     update_bullets(config.grid, tank1, tank2)
+    update_bombs(config.grid, tank1, tank2)
     update_gridsize("snap")
