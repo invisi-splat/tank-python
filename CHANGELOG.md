@@ -1,9 +1,14 @@
 # CHANGELOG
 All notable changes to this project will be documented in this file.
 
-## [0.1.2] - 2019-11-18
+## [0.2.0] - 2019-11-18
+### Added
+- Bombs are now here and are mostly functional!
+- Bombs will explode after a set amount of time and kill anyone within its radius
+- Press `t` to deploy one for Player 1; press `]` to deploy one for Player 2
+
 ### Changed
-- Remapped Player 2 controls to `OKL;`
+- Remapped Player 2 movement controls to `OKL;` from `IJKL`
 
 ## [0.1.1] - 2019-11-18
 ### Added

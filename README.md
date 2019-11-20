@@ -11,12 +11,13 @@ __Player 2 controls:__ `OKL;` to move; `[` and `'` to rotate anticlockwise and c
 ### Features:
  - _Tanks!_
  - _Bullets!_
+ - _Bombs!_
  - _Semi-functional scoring system!_
  - _Pausing and quitting!_
 
 ### To do:
  - Fix bullet hitboxes
- - Add bombs
+ - ~~Add bombs~~
  - Add powerups
  - Add settings and main menu
  - Fix point display
