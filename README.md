@@ -5,8 +5,8 @@ This is a tank game written in vanilla Python (with the exception of the keyboar
 
 __Run tanks.py to play.__ Press `space-p` to pause and `space-q` to quit.
 
-__Player 1 controls:__ `WASD` to move; `R` and `F` to rotate anticlockwise and clockwise; `C` to fire a bullet  
-__Player 2 controls:__ `OKL;` to move; `[` and `'` to rotate anticlockwise and clockwise; `/` to fire a bullet
+__Player 1 controls:__ `WASD` to move; `R` and `F` to rotate anticlockwise and clockwise; `C` to fire a bullet, `T` to place a bomb  
+__Player 2 controls:__ `OKL;` to move; `[` and `'` to rotate anticlockwise and clockwise; `/` to fire a bullet, `]` to place a bomb
 
 ### Features:
  - _Tanks!_

@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 
 ## [0.2.1] - 2019-11-21
+### Changed
+- Changed `README.md` to be up to date
+
 ### Fixed
 - Previous changelog now shows correct date
 - Fixed issue in which bombs would not properly show up
@@ -10,7 +13,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Bombs are now here and are mostly functional!
 - Bombs will explode after a set amount of time and kill anyone within its radius
-- Press `t` to deploy one for Player 1; press `]` to deploy one for Player 2
+- Press `T` to deploy one for Player 1; press `]` to deploy one for Player 2
 
 ### Changed
 - Remapped Player 2 movement controls to `OKL;` from `IJKL`
