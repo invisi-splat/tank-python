@@ -1,6 +1,14 @@
 # CHANGELOG
 All notable changes to this project will be documented in this file.
 
+## [0.2.2] - 2019-11-21
+### Changed
+- Moved bottom boundary slightly lower
+
+### Fixed
+- Fixed issue in which two bombs exploding would crash the program
+
+
 ## [0.2.1] - 2019-11-21
 ### Changed
 - Changed `README.md` to be up to date
