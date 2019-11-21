@@ -133,7 +133,7 @@ def draw_bombs(grid):
                         grid[y + currenty][x + currentx] = tank.color[1] \
                                                         + " " + config.reset
             else:
-                grid[y][x] = tank.color[0] + "◯" + config.reset
+                grid[y][x] = tank.color[0] + "╬" + config.reset
     return grid
 
 
