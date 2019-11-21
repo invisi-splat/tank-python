@@ -82,7 +82,7 @@ class Tank:
             collision["x"] = 1
         if self.y < 2:
             collision["y"] = -1
-        if self.y > obj[1] - 2:
+        if self.y > obj[1] - 1:
             collision["y"] = 1
         return collision
 

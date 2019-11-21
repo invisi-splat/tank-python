@@ -151,14 +151,17 @@ def update_bombs(grid, *tanks):
     for tank in tanks:
         bombs = tank.bombs
         for bomb in range(len(bombs)):
-            if bombs[bomb].destruct <= 0:
-                del bombs[bomb]
-            elif bombs[bomb].explode:
-                bombs[bomb].destruct -= 1
-            elif bombs[bomb].life <= 0:
-                bombs[bomb].explode = True
-            else:
-                bombs[bomb].life -= 1
+            try:
+                if bombs[bomb].destruct <= 0:
+                    del bombs[bomb]
+                elif bombs[bomb].explode:
+                    bombs[bomb].destruct -= 1
+                elif bombs[bomb].life <= 0:
+                    bombs[bomb].explode = True
+                else:
+                    bombs[bomb].life -= 1
+            except IndexError:
+                pass
         hit_bomb = tank.hit_bomb()
         if hit_bomb:
             collision_stuff(tank, hit_bomb[1])

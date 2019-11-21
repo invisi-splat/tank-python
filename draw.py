@@ -130,8 +130,11 @@ def draw_bombs(grid):
                 for line in range(len(radius)):
                     currenty = line - math.floor(len(radius) / 2)
                     for currentx in range(radius[line][0], radius[line][1] + 1):
-                        grid[y + currenty][x + currentx] = tank.color[1] \
-                                                        + " " + config.reset
+                        try:
+                            grid[y + currenty][x + currentx] = tank.color[1] \
+                                                            + " " + config.reset
+                        except IndexError:
+                            pass
             else:
                 grid[y][x] = tank.color[0] + "╬" + config.reset
     return grid
